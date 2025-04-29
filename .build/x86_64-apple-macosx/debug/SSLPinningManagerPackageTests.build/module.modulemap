@@ -1,4 +1,0 @@
-module SSLPinningManagerPackageTests {
-    header "/Users/apple12/Documents/HnsSPMGit/SSLPinningManager/.build/x86_64-apple-macosx/debug/SSLPinningManagerPackageTests.build/SSLPinningManagerPackageTests-Swift.h"
-    requires objc
-}
