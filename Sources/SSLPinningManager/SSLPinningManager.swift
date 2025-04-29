@@ -256,21 +256,38 @@ struct Sha256 {
     init() {
         CC_SHA256_Init(context)
     }
-
+    
     func update(data: Data) {
-        data.withUnsafeBytes { (bytes: UnsafePointer<Int8>) -> Void in
-            let end = bytes.advanced(by: data.count)
-            for f in sequence(first: bytes, next: { $0.advanced(by: Int(CC_LONG.max)) }).prefix(while: { (current) -> Bool in current < end})  {
-                _ = CC_SHA256_Update(context, f, CC_LONG(Swift.min(f.distance(to: end), Int(CC_LONG.max))))
+        data.withUnsafeBytes { rawBufferPointer in
+            guard let pointer = rawBufferPointer.bindMemory(to: Int8.self).baseAddress else {
+                return
+            }
+
+            let end = pointer.advanced(by: data.count)
+
+            for f in sequence(first: pointer, next: { $0.advanced(by: Int(CC_LONG.max)) })
+                .prefix(while: { $0 < end }) {
+
+                let length = Swift.min(f.distance(to: end), Int(CC_LONG.max))
+                _ = CC_SHA256_Update(context, f, CC_LONG(length))
             }
         }
     }
+    
+//    func update(data: Data) {
+//        data.withUnsafeBytes { (bytes: UnsafePointer<Int8>) -> Void in
+//            let end = bytes.advanced(by: data.count)
+//            for f in sequence(first: bytes, next: { $0.advanced(by: Int(CC_LONG.max)) }).prefix(while: { (current) -> Bool in current < end})  {
+//                _ = CC_SHA256_Update(context, f, CC_LONG(Swift.min(f.distance(to: end), Int(CC_LONG.max))))
+//            }
+//        }
+//    }
 
     func final() -> Data {
         var digest = [UInt8](repeating: 0, count:Int(CC_SHA256_DIGEST_LENGTH))
         CC_SHA256_Final(&digest, context)
 
-        return Data(bytes: digest)
+        return Data(digest)
     }
 }
 

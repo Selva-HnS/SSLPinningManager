@@ -1,0 +1,4 @@
+module SSLPinningManager {
+    header "/Users/apple12/Documents/HnsSPMGit/SSLPinningManager/.build/x86_64-apple-macosx/debug/SSLPinningManager.build/SSLPinningManager-Swift.h"
+    requires objc
+}
